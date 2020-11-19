@@ -1,0 +1,160 @@
+{
+    "generic": {
+        "tables_info": {
+            "forwardPacket_table": {
+                "max_entries": 65536,
+                "allowed_actions": [
+                    "do_forwardPacket",
+                    "do_dropPacket"
+                ],
+                "name": "forwardPacket_table"
+            },
+            "processPkt_table": {
+                "max_entries": 1,
+                "allowed_actions": [
+                    "do_processPkt"
+                ],
+                "name": "processPkt_table"
+            }
+        },
+        "action_info": {
+            "do_forwardPacket": {
+                "name": "do_forwardPacket",
+                "action_data": {
+                    "theport": {
+                        "size": 16
+                    }
+                }
+            },
+            "do_processPkt": {
+                "name": "do_processPkt",
+                "action_data": {}
+            },
+            "do_dropPacket": {
+                "name": "do_dropPacket",
+                "action_data": {}
+            }
+        }
+    },
+    "vendor": {
+        "register_info": {},
+        "backend_source_info": {
+            "date": "2018/12/05 20:24:16",
+            "source_files": "dmx-v1.yml"
+        },
+        "counters_info": {},
+        "meter_info": {},
+        "frontend_source_info": {
+            "date": "2018/12/05 20:24:15",
+            "source_files": [
+                "C:\\Users\\uname\\NFP_SDK\\dmx-v1\\dmx-v1.p4"
+            ]
+        },
+        "tables_info": {
+            "forwardPacket_table": {
+                "name": "forwardPacket_table",
+                "matches": [
+                    {
+                        "field": "meta.processPayloadResult",
+                        "type": "exact",
+                        "class": "field",
+                        "lm_layout": [
+                            {
+                                "width": 8,
+                                "fldbitoff": 0,
+                                "name": "processPayloadResult",
+                                "lmbitoff": 632
+                            }
+                        ]
+                    }
+                ],
+                "allowed_actions": [
+                    "do_forwardPacket",
+                    "do_dropPacket"
+                ],
+                "id": 0,
+                "max_entries": 65536,
+                "data_shift": 3,
+                "data_size": 8
+            },
+            "processPkt_table": {
+                "name": "processPkt_table",
+                "matches": [],
+                "allowed_actions": [
+                    "do_processPkt"
+                ],
+                "id": 1,
+                "max_entries": 1,
+                "data_shift": 2,
+                "data_size": 4
+            }
+        },
+        "action_info": {
+            "do_forwardPacket": {
+                "action_data_packed": [
+                    {
+                        "actiondata": "theport",
+                        "name": "theport",
+                        "pad_cnt": 1,
+                        "doc": null,
+                        "pad_szbytes": 2,
+                        "pad_type": "uint16_t",
+                        "split": false,
+                        "size": 16
+                    },
+                    {
+                        "pad_cnt": 2,
+                        "pad_type": "uint8_t",
+                        "actiondata": null,
+                        "name": "__pif_padding",
+                        "split": false,
+                        "doc": "padding",
+                        "pad_szbytes": 1,
+                        "size": 8
+                    }
+                ],
+                "name": "do_forwardPacket",
+                "action_data": {
+                    "theport": {
+                        "size": 16
+                    }
+                },
+                "ruleno_field": "",
+                "noeffect": false,
+                "id": 0,
+                "tableno_field": ""
+            },
+            "do_processPkt": {
+                "action_data_packed": [],
+                "name": "do_processPkt",
+                "action_data": {},
+                "ruleno_field": "",
+                "noeffect": false,
+                "id": 1,
+                "tableno_field": ""
+            },
+            "do_dropPacket": {
+                "action_data_packed": [],
+                "name": "do_dropPacket",
+                "action_data": {},
+                "ruleno_field": "",
+                "noeffect": false,
+                "id": 2,
+                "tableno_field": ""
+            }
+        },
+        "multicast": {
+            "table_rtsym": "_pif_mcast_table",
+            "group_count": 0,
+            "group_size": 16
+        },
+        "build_uuid": [
+            655417686,
+            3026978816,
+            4174057960,
+            3163610337
+        ],
+        "parser_value_set_info": {},
+        "digests_info": {}
+    }
+}
