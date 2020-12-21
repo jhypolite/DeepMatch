@@ -1,6 +1,36 @@
 # DeepMatch
 
-## Setup and Installation
+DeepMatch is a deep packet inspection capability designed for programmable network processors that can be called as an extern in P4 programs. More broadly, our paper provides guidance for applications that need to touch every byte of the payload. Such tasks, that can fit in the compute and memory bounds identified in the paper, are candidates for implementation on this class of network processors, and the paper provides guidance on how to start thinking about implementing them.
+
+For further details, see our CoNEXT 2020 [paper and video](https://dl.acm.org/doi/abs/10.1145/3386367.3431290).
+
+## 1. Great Questions from the Conference:
+
+#### I have a question about the motivation. what use cases do you envision for this, given that everything is going encrypted now?
+
+Section 3 of the DeepMatch paper provides a few use cases.
+
+I would argue that everything is not going to encryption. In fact, many distributed web applications do not encrypt traffic between all components. For example, consider a cloud service offloading packet analysis compute to the SmartNIC. Here, the SmartNIC performs packet classification and adds a new header containing information that a later component can pick up and use to quickly determine how to handle the packet without the need to reprocess it. DeepMatch has the necessary capabilities to support such use cases.
+
+That said, there are many applications that do use encryption. Note that encryption/decryption is another operation that needs to process every byte of the payload, so an interesting future work to build on this might be to offload decryption to the NPU. Decryption-pattern-match pipelines are already seen in some networks and is a possible direction to explore.
+
+#### Building on top of the above question, what about using AI algos? It's a RISC platform, but sounds like a possible compromise wrt a TPU (but sticking to int math)?
+
+Techniques such as knowledge distillation and quantization may be used to deploy such algorithms on network processors. The concept of knowledge distillation looks at how to transfer knowledge from a large model to a small one, The concept of quantization looks at how to approximate a large set of values to a smaller set; e.g. from real numbers to floating point to fixed point integer.
+
+More broadly, our paper provides guidance for anything that needs to touch every byte of the payload. So, classification tasks that can fit in the compute and memory bounds the paper identify become candidates, and the paper provides guidance on how to start thinking about implementing them.
+
+#### Is DeepMatch the end-and-be-all for SmartNIC performance? If not, how would you improve the card?
+
+Netronome does the right thing to make their card small and compact and real time. The memories are not larger because, if they were, then they would be slower and you would fit less FPCs on the card, so you would get less throughput. Netronome is giving us more of a real-time engine but then putting the burden on the programmer in order to actually achieve real time. So, a lot of the simple things like "oh, I need more memory" would eat into the performance that you get.
+
+One limiting factor in the DeepMatch design is that each FPC is running a pretty tight DFA loop. This loop is a small fraction of the 8K instruction limit. So, if we could replicate the DFA loop in both code stores (when in shared code mode) then we would eliminate contention for that block of code; now the only contention would be for uncommon code that is used for packet headers. This should result in less impact due to code sharing. Unfortunately, such code placement is not supported by the version of Netronome's NFP-6000 that we used.
+
+#### Will future programmable networking innovation be in the hardware or the software?
+
+DeepMatch motivates a match-action processing pipeline design with better support for full-packet processing (not just headers). That said, the future is in co-design — software/high-level definitions of tasks that are then supported by specialized hardware. That means definiting good abstractions and compilers/tools to map those abstractions along with developing architectures that can provide both flexibility and programmability and high performance and efficiency.
+
+## 2. Setup and Installation
 
 ### DeepMatch Host
 
@@ -34,7 +64,7 @@ We used the following configuration for our traffic generator host:
 
 We use an Arista DCS-7050QX-32-R 32x Port 40G QSFP+ Layer 3 Switch
 
-## Build
+## 3. Build
 
 Use Netronome Programmer Studio (we used version 6.0.3.1 build 3241) to create a new project with the DeepMatch P4v14 source files.
 
@@ -59,7 +89,7 @@ Build the code and transfer the following files to the DeepMatch host:
   * file.p4cfg
   * out/pif_design.json
 
-## Usage (Manual Eval)
+## 4. Usage (Manual Eval)
 
 ### Running DeepMatch
 
@@ -122,7 +152,7 @@ Another way to check
 
 `rtecli -p 20207 counters list-system`
 
-## Usage (Automated Eval)
+## 5. Usage (Automated Eval)
 
 We use Python fabric to automate the manual evaluation steps.
 http://www.fabfile.org/
